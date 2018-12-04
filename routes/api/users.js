@@ -6,7 +6,9 @@ const crypto = require("crypto");
 
 const gravatar = require('gravatar')
 
+const jwt = require('jsonwebtoken');
 
+const key = require('../../config/key').secretOrKey
 
 const User = require('../../models/Users')
 
@@ -26,9 +28,17 @@ router.post('/login', (req,res)=>{
             let md5 = crypto.createHash("md5");
             let Pas = md5.update(password).digest("hex");
             if(Pas === user.password){
-                res.status(200).json(user)
+                const rule = {id: user.id, name:user.name}
+                // jwt.sign({'规则', '加密名字', '过期时间', '箭头函数');
+                jwt.sign(rule, key, {expiresIn: 3600},(err, token)=>{
+                    if(err) throw console.log(err);
+                    res.json({
+                        success:true,
+                        token: token
+                    })
+                })
             }else{
-                res.status(401).json({msg:'密码不正确'})
+                res.status(400).json({msg:'密码不正确'})
             }
             
             return res
