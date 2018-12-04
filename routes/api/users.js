@@ -4,6 +4,10 @@ const router = express.Router()
 
 const crypto = require("crypto");
 
+const gravatar = require('gravatar')
+
+
+
 const User = require('../../models/Users')
 
 // $route GET api/user/login
@@ -25,10 +29,12 @@ router.post('/regin', (req,res)=>{
             if(user){
                 return res.status(400).json({email:'邮箱已被注册!'})
             }else{
+                const avatar = gravatar.url(req.body.email, {s: '200', r: 'pg', d: 'mm'});
+
                 const newUser = new User({
                     name: req.body.name,
                     email: req.body.email,
-                    avatar:req.body.avatar,
+                    avatar,
                     password: req.body.password
                 })
                 let md5 = crypto.createHash("md5");
