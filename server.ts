@@ -4,6 +4,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 //@ts-ignore
 const bodyParser = require('body-parser')
+const passport = require("passport")
 const app = express()
 
 //连接 db
@@ -17,13 +18,19 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
 
+//passport 初始化
+app.use(passport.initialize())
+
 mongoose.connect(db)
     .then(()=> console.log('success'))
     .catch(err => console.log(err))
 
-app.get('/', (req,res)=>{
-    res.send('Hello World!')
-})
+
+require('./passport')(passport)
+
+// app.get('/', (req,res)=>{
+//     res.send('Hello World!')
+// })
 
 
 // 使用 routes

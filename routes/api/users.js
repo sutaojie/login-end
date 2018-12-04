@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const gravatar = require('gravatar')
 
 const jwt = require('jsonwebtoken');
+const passport = require('passport')
 
 const key = require('../../config/key').secretOrKey
 
@@ -30,11 +31,12 @@ router.post('/login', (req,res)=>{
             if(Pas === user.password){
                 const rule = {id: user.id, name:user.name}
                 // jwt.sign({'规则', '加密名字', '过期时间', '箭头函数');
-                jwt.sign(rule, key, {expiresIn: 3600},(err, token)=>{
+                jwt.sign(rule, key, {expiresIn: 36000},(err, token)=>{
                     if(err) throw console.log(err);
                     res.json({
                         success:true,
-                        token: token
+                        token: 'Bearer '+token
+                        // token,
                     })
                 })
             }else{
@@ -73,5 +75,17 @@ router.post('/regin', (req,res)=>{
             }
         })
 })
+
+// $route GET api/user/current
+// @desc return current user 
+// @access Private 
+router.get('/current', passport.authenticate('jwt',{session: false}),(req,res)=>{
+    res.json({
+        id:req.user.id,
+        name:req.user.name,
+        email:req.user.email,
+    })
+})
+
 
 module.exports = router
