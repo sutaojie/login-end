@@ -2,6 +2,8 @@
 const express = require('express')
 //@ts-ignore
 const mongoose = require('mongoose')
+//@ts-ignore
+const bodyParser = require('body-parser')
 const app = express()
 
 //连接 db
@@ -9,6 +11,10 @@ const db = require('./config/key').mongoURI
 
 //引入 users.js
 const users = require('./routes/api/users')
+
+//使用 body-parser 中间件
+app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.json())
 
 
 mongoose.connect(db)

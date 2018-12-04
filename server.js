@@ -2,11 +2,16 @@
 var express = require('express');
 //@ts-ignore
 var mongoose = require('mongoose');
+//@ts-ignore
+var bodyParser = require('body-parser');
 var app = express();
 //连接 db
 var db = require('./config/key').mongoURI;
 //引入 users.js
 var users = require('./routes/api/users');
+//使用 body-parser 中间件
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 mongoose.connect(db)
     .then(function () { return console.log('success'); })["catch"](function (err) { return console.log(err); });
 app.get('/', function (req, res) {
