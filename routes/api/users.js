@@ -11,10 +11,29 @@ const gravatar = require('gravatar')
 const User = require('../../models/Users')
 
 // $route GET api/user/login
-// @desc 返回的请求的 json 数据
+// @desc 返回 token jwt passport
 // @access public 
-router.get('/login', (req,res)=>{
-    res.json({msg:'login works'})
+router.post('/login', (req,res)=>{
+    const email = req.body.email
+    const password = req.body.password
+
+    //查询数据库
+    User.findOne({email})
+        .then(user =>{
+            if(!user){
+                return res.status(404).json({email:"用户不存在"})
+            }
+            let md5 = crypto.createHash("md5");
+            let Pas = md5.update(password).digest("hex");
+            if(Pas === user.password){
+                res.status(200).json(user)
+            }else{
+                res.status(401).json({msg:'密码不正确'})
+            }
+            
+            return res
+
+        })
 })
 
 // $route POST api/user/regin
@@ -24,8 +43,6 @@ router.post('/regin', (req,res)=>{
     //查询数据库中是否拥有邮箱
     User.findOne({email:req.body.email})
         .then((user)=>{
-            console.log(user);
-            
             if(user){
                 return res.status(400).json({email:'邮箱已被注册!'})
             }else{
